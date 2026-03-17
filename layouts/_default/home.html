@@ -82,7 +82,7 @@
         </form>
         <p class="quiet" data-search-status>Loading search index...</p>
         <ul class="search-results" data-search-results></ul>
-        <p class="quiet"><a href="/search/">Open full search page</a></p>
+        <p class="quiet"><a href="{{ "search/" | relURL }}">Open full search page</a></p>
       </section>
 
       <section class="home-section">
@@ -91,10 +91,10 @@
           {{ range $tagPages }}
             <li><a class="tag-pill" href="{{ .RelPermalink }}">{{ .Title }}</a></li>
           {{ end }}
-          <li><a class="tag-pill" href="/tags/">All Tags</a></li>
+          <li><a class="tag-pill" href="{{ "tags/" | relURL }}">All Tags</a></li>
         </ul>
       </section>
     </aside>
   </section>
-  <script src="/js/search.js"></script>
+  <script src="{{ "js/search.js" | relURL }}"></script>
 {{ end }}

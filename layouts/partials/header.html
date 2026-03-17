@@ -1,14 +1,32 @@
 <header class="site-header">
+  {{ $current := .RelPermalink }}
+  {{ $homePath := site.Home.RelPermalink }}
+  {{ if ne $homePath "/" }}
+    {{ $current = strings.TrimPrefix $homePath $current }}
+    {{ if eq $current "" }}
+      {{ $current = "/" }}
+    {{ else }}
+      {{ $current = printf "/%s" $current }}
+    {{ end }}
+  {{ end }}
   <p class="site-kicker">Academic Website</p>
-  <h1 class="site-title"><a href="/">{{ site.Title }}</a></h1>
+  <h1 class="site-title"><a href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a></h1>
   <p class="site-tagline">{{ site.Params.tagline }}</p>
   <nav class="site-nav" aria-label="Main navigation">
-    {{ $current := .RelPermalink }}
     {{ range site.Menus.main }}
-      {{ if not (and (eq $current "/") (eq .URL "/")) }}
-      {{ $active := or (eq $current .URL) (and (ne .URL "/") (hasPrefix $current .URL)) }}
-      <a href="{{ .URL }}"{{ if $active }} aria-current="page"{{ end }}>{{ .Name }}</a>
+      {{ $active := false }}
+      {{ if eq .Name "Home" }}
+        {{ $active = $.IsHome }}
+      {{ else if eq .Name "Blog/Notes" }}
+        {{ $active = or (hasPrefix $current "/blog/") (hasPrefix $current "/archive/") (hasPrefix $current "/tags/") (hasPrefix $current "/tag/") }}
+      {{ else if eq .Name "Lectures" }}
+        {{ $active = and (hasPrefix $current "/lectures/") (not (hasPrefix $current "/lectures/media/")) }}
+      {{ else if eq .Name "Podcast" }}
+        {{ $active = hasPrefix $current "/lectures/media/" }}
+      {{ else }}
+        {{ $active = eq $current .URL }}
       {{ end }}
+      <a class="{{ if eq .Name "Home" }}nav-home-link{{ end }}" href="{{ .URL | relURL }}"{{ if $active }} aria-current="page"{{ end }}>{{ .Name }}</a>
     {{ end }}
   </nav>
 </header>

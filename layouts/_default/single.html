@@ -1,7 +1,5 @@
 {{ define "main" }}
-  {{ $path := .RelPermalink }}
-
-  {{ if hasPrefix $path "/publications/" }}
+  {{ if eq .Section "publications" }}
     <article>
       <h1 class="page-title">{{ .Title }}</h1>
       <p class="meta">
@@ -13,7 +11,7 @@
       {{ with .Params.tags }}
         <div class="inline-list">
           {{ range . }}
-            <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+            <a href="{{ printf "tag/%s/" (. | urlize) | relURL }}">{{ . }}</a>
           {{ end }}
         </div>
       {{ end }}
@@ -54,14 +52,14 @@
       {{ end }}
     </article>
 
-  {{ else if hasPrefix $path "/blog/" }}
+  {{ else if eq .Section "blog" }}
     <article>
       <h1 class="page-title">{{ .Title }}</h1>
       <p class="meta">{{ .Date.Format "January 2, 2006" }}</p>
       {{ with .Params.tags }}
         <div class="inline-list">
           {{ range . }}
-            <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+            <a href="{{ printf "tag/%s/" (. | urlize) | relURL }}">{{ . }}</a>
           {{ end }}
         </div>
       {{ end }}
@@ -73,7 +71,7 @@
       </section>
     </article>
 
-  {{ else if eq .RelPermalink "/tags/" }}
+  {{ else if eq .Section "tags" }}
     {{ $tagPages := sort (where site.RegularPages "Section" "tag") "Title" "asc" }}
     <article>
       <h1 class="page-title">{{ .Title }}</h1>
@@ -89,7 +87,7 @@
       </ul>
     </article>
 
-  {{ else if hasPrefix $path "/tag/" }}
+  {{ else if eq .Section "tag" }}
     {{ $term := .File.BaseFileName }}
     {{ $matches := slice }}
     {{ range site.RegularPages }}
@@ -128,7 +126,7 @@
       </ul>
     </article>
 
-  {{ else if hasPrefix $path "/lectures/media/series/" }}
+  {{ else if and (eq .Section "lectures") (eq .CurrentSection.Title "Media Series") }}
     {{ $seriesKey := .Slug | default .File.BaseFileName }}
     {{ $mediaSection := site.GetPage "/lectures/media" }}
     {{ $episodes := sort (where ($mediaSection.RegularPagesRecursive | default (slice)) "Params.series" $seriesKey) "Date" "desc" }}
@@ -152,7 +150,7 @@
       </section>
     </article>
 
-  {{ else if hasPrefix $path "/lectures/media/" }}
+  {{ else if and (eq .Section "lectures") (eq .CurrentSection.Title "Podcast") }}
     <article>
       <h1 class="page-title">{{ .Title }}</h1>
       <p class="meta">{{ .Date.Format "January 2, 2006" }} · {{ title (.Params.format | default "media") }}</p>
@@ -164,7 +162,7 @@
         </div>
       {{ end }}
       {{ with .Params.series }}
-        <p class="quiet">Series: <a href="/lectures/media/series/{{ . | urlize }}/">{{ . }}</a></p>
+        <p class="quiet">Series: <a href="{{ printf "lectures/media/series/%s/" (. | urlize) | relURL }}">{{ . }}</a></p>
       {{ end }}
       {{ with .Params.show_notes }}
         <section class="panel">
@@ -196,7 +194,7 @@
       </section>
     </article>
 
-  {{ else if hasPrefix $path "/lectures/series/" }}
+  {{ else if and (eq .Section "lectures") (eq .CurrentSection.Title "Lecture Series") }}
     {{ $seriesKey := .Slug | default .File.BaseFileName }}
     {{ $lecturesSection := site.GetPage "/lectures" }}
     {{ $talks := sort (where ($lecturesSection.RegularPagesRecursive | default (slice)) "Params.series" $seriesKey) "Date" "desc" }}
@@ -220,19 +218,19 @@
       </section>
     </article>
 
-  {{ else if hasPrefix $path "/lectures/" }}
+  {{ else if eq .Section "lectures" }}
     <article>
       <h1 class="page-title">{{ .Title }}</h1>
       <p class="meta">{{ .Date.Format "January 2, 2006" }}{{ with .Params.venue }} · {{ . }}{{ end }}</p>
       {{ with .Params.tags }}
         <div class="inline-list">
           {{ range . }}
-            <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+            <a href="{{ printf "tag/%s/" (. | urlize) | relURL }}">{{ . }}</a>
           {{ end }}
         </div>
       {{ end }}
       {{ with .Params.series }}
-        <p class="quiet">Series: <a href="/lectures/series/{{ . | urlize }}/">{{ . }}</a></p>
+        <p class="quiet">Series: <a href="{{ printf "lectures/series/%s/" (. | urlize) | relURL }}">{{ . }}</a></p>
       {{ end }}
       {{ with .Params.abstract }}
         <section class="panel">
@@ -255,7 +253,7 @@
       </section>
     </article>
 
-  {{ else if eq .RelPermalink "/about/" }}
+  {{ else if eq .Title "About" }}
     {{ $portrait := site.Params.portrait | relURL }}
     <article class="about-layout">
       <div class="about-copy">

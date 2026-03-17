@@ -1,7 +1,5 @@
 {{ define "main" }}
-  {{ $rel := .RelPermalink }}
-
-  {{ if eq $rel "/publications/" }}
+  {{ if and (eq .Kind "section") (eq .Section "publications") }}
     {{ $articles := sort (where .RegularPages "Params.publication_section" "articles") "Params.year" "desc" }}
     {{ $books := sort (where .RegularPages "Params.publication_section" "books") "Params.year" "desc" }}
     {{ $other := sort (where .RegularPages "Params.publication_section" "other") "Params.year" "desc" }}
@@ -80,12 +78,12 @@
       </section>
     </section>
 
-  {{ else if eq $rel "/blog/" }}
+  {{ else if and (eq .Kind "section") (eq .Section "blog") }}
     {{ $items := sort .RegularPages "Date" "desc" }}
     <section>
       <h1 class="page-title">{{ .Title }}</h1>
       <p class="section-intro">{{ .Params.description }}</p>
-      <p class="quiet"><a href="/tags/">Tags</a> · <a href="/archive/">Archive</a> · <a href="{{ .RelPermalink }}index.xml">RSS</a></p>
+      <p class="quiet"><a href="{{ "tags/" | relURL }}">Tags</a> · <a href="{{ "archive/" | relURL }}">Archive</a> · <a href="{{ .RelPermalink }}index.xml">RSS</a></p>
       <div class="content-block">{{ .Content }}</div>
       <ul class="listing">
         {{ range $items }}
@@ -100,7 +98,7 @@
             {{ with .Params.tags }}
               <div class="inline-list">
                 {{ range . }}
-                  <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+                  <a href="{{ printf "tag/%s/" (. | urlize) | relURL }}">{{ . }}</a>
                 {{ end }}
               </div>
             {{ end }}
@@ -109,7 +107,7 @@
       </ul>
     </section>
 
-  {{ else if eq $rel "/lectures/" }}
+  {{ else if and (eq .Kind "section") (eq .Section "lectures") (eq .Title "Series") }}
     {{ $lecturesSection := site.GetPage "/lectures" }}
     {{ $standaloneTalks := sort (where ($lecturesSection.RegularPages | default (slice)) "Params.series" "eq" nil) "Date" "desc" }}
     <section>
@@ -133,7 +131,7 @@
       </section>
     </section>
 
-  {{ else if eq $rel "/lectures/media/" }}
+  {{ else if and (eq .Kind "section") (eq .Title "Podcast") }}
     {{ $mediaSection := site.GetPage "/lectures/media" }}
     {{ $mediaSeriesSection := site.GetPage "/lectures/media/series" }}
     {{ $seriesPages := sort ($mediaSeriesSection.RegularPages | default (slice)) "Title" "asc" }}
@@ -171,7 +169,7 @@
       </section>
     </section>
 
-  {{ else if eq $rel "/lectures/series/" }}
+  {{ else if and (eq .Kind "section") (eq .Title "Lecture Series") }}
     <section>
       <h1 class="page-title">{{ .Title }}</h1>
       <div class="content-block">{{ .Content }}</div>
@@ -185,7 +183,7 @@
       </ul>
     </section>
 
-  {{ else if eq $rel "/lectures/media/series/" }}
+  {{ else if and (eq .Kind "section") (eq .Title "Media Series") }}
     <section>
       <h1 class="page-title">{{ .Title }}</h1>
       <div class="content-block">{{ .Content }}</div>
@@ -199,7 +197,7 @@
       </ul>
     </section>
 
-  {{ else if eq $rel "/archive/" }}
+  {{ else if eq .Title "Archive" }}
     {{ $posts := where site.RegularPages "Section" "blog" }}
     <section>
       <h1 class="page-title">{{ .Title }}</h1>
@@ -219,7 +217,7 @@
       {{ end }}
     </section>
 
-  {{ else if eq $rel "/search/" }}
+  {{ else if eq .Title "Search" }}
     <section>
       <h1 class="page-title">{{ .Title }}</h1>
       <p class="section-intro">{{ .Params.description }}</p>
@@ -230,7 +228,7 @@
       </form>
       <p class="quiet" data-search-status>Loading search index...</p>
       <ul class="search-results" data-search-results></ul>
-      <script src="/js/search.js"></script>
+      <script src="{{ "js/search.js" | relURL }}"></script>
     </section>
 
   {{ else }}
