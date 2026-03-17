@@ -1,5 +1,5 @@
 {
-  "title": "What Makes Shutdown Possible? The Significance for AGI of a Shutdown Mechanism with the Data \"Market\" as an External Constraint",
+  "title": "What Makes Halt Possible? The Significance for AGI of a Halt Mechanism with the Data \"Market\" as an External Constraint",
   "slug": "lecture-recording-ii",
   "date": "2023-08-09",
   "venue": "Association Seminar Talk",
@@ -8,7 +8,7 @@
     "research",
     "teaching"
   ],
-  "abstract": "A seminar lecture examining why shutdown remains a central problem for AGI, with particular attention to the idea of a shutdown mechanism constrained by a data market as an external condition.",
+  "abstract": "A seminar lecture examining why halt remains a central problem for AGI, with particular attention to the idea of a halt mechanism constrained by a data market as an external condition.",
   "materials": [
     {
       "label": "Video on Bilibili",
