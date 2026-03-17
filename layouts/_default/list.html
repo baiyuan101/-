@@ -16,9 +16,15 @@
               <div class="listing-title-row">
                 <a class="listing-title-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
                 <div class="listing-actions">
-                  {{ with .Params.pdf }}<a class="listing-action-link" href="{{ . }}">PDF</a>{{ end }}
+                  {{ with .Params.pdf }}
+                    {{ $pdf := . }}
+                    <a class="listing-action-link" href="{{ if hasPrefix $pdf "/" }}{{ strings.TrimPrefix "/" $pdf | absURL }}{{ else }}{{ $pdf }}{{ end }}">PDF</a>
+                  {{ end }}
                   {{ if and .Params.pdf .Params.ai_translation_pdf }}<span class="listing-action-separator">|</span>{{ end }}
-                  {{ with .Params.ai_translation_pdf }}<a class="listing-action-link" href="{{ . }}">AI Translation (EN)</a>{{ end }}
+                  {{ with .Params.ai_translation_pdf }}
+                    {{ $translation := . }}
+                    <a class="listing-action-link" href="{{ if hasPrefix $translation "/" }}{{ strings.TrimPrefix "/" $translation | absURL }}{{ else }}{{ $translation }}{{ end }}">AI Translation (EN)</a>
+                  {{ end }}
                 </div>
               </div>
               <div class="meta">

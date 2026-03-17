@@ -31,10 +31,12 @@
             <li><a href="{{ . }}">External link</a></li>
           {{ end }}
           {{ with .Params.pdf }}
-            <li><a href="{{ . }}">PDF</a></li>
+            {{ $pdf := . }}
+            <li><a href="{{ if hasPrefix $pdf "/" }}{{ strings.TrimPrefix "/" $pdf | absURL }}{{ else }}{{ $pdf }}{{ end }}">PDF</a></li>
           {{ end }}
           {{ with .Params.ai_translation_pdf }}
-            <li><a href="{{ . }}">AI Translation (EN)</a></li>
+            {{ $translation := . }}
+            <li><a href="{{ if hasPrefix $translation "/" }}{{ strings.TrimPrefix "/" $translation | absURL }}{{ else }}{{ $translation }}{{ end }}">AI Translation (EN)</a></li>
           {{ end }}
           {{ with .Params.purchase_url }}
             <li><a href="{{ . }}">Purchase link</a></li>
