@@ -9,6 +9,9 @@ disableKinds = ["taxonomy", "term"]
 [params]
 author = "Hanlin Ma"
 chinese_name = "马翰林"
+site_name = "Post-Bot"
+site_subtitle = "Hanlin Ma's Academic Stack"
+site_kicker = "Hanlin Ma"
 email = "2439@usts.edu.cn"
 tagline = "Philosophy of science and technology, ethics, cognitive science, and AI"
 description = "Academic website of Hanlin Ma, Associate Professor at Suzhou University of Science and Technology."

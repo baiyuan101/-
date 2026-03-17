@@ -1,2 +1,3 @@
+baseURL = "https://example.org/"
 relativeURLs = true
 canonifyURLs = false

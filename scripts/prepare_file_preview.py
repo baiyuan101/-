@@ -9,6 +9,8 @@ PREVIEW_DIR = ROOT / "public-preview"
 # so local file:// browsing opens the generated page instead of a folder view.
 QUOTED_HREF_RE = re.compile(r'href=(["\'])(\./[^"\']*/)\1')
 UNQUOTED_HREF_RE = re.compile(r'href=(\./[^\s>]*?/)(?=[\s>])')
+QUOTED_SUBPATH_RE = re.compile(r'((?:href|src)=(["\']))((?:\./|\.\./)+)-/([^"\']+)\2')
+UNQUOTED_SUBPATH_RE = re.compile(r'((?:href|src)=)((?:\./|\.\./)+)-/([^\s>]+)')
 
 
 def should_rewrite(target: str) -> bool:
@@ -21,6 +23,19 @@ def should_rewrite(target: str) -> bool:
 
 def rewrite_html(path: Path) -> None:
     original = path.read_text(encoding="utf-8")
+
+    def strip_quoted_subpath(match: re.Match) -> str:
+        attr = match.group(1)
+        quote = match.group(2)
+        prefix = match.group(3)
+        rest = match.group(4)
+        return f"{attr}{prefix}{rest}{quote}"
+
+    def strip_unquoted_subpath(match: re.Match) -> str:
+        attr = match.group(1)
+        prefix = match.group(2)
+        rest = match.group(3)
+        return f"{attr}{prefix}{rest}"
 
     def replace_quoted(match: re.Match) -> str:
         quote = match.group(1)
@@ -35,7 +50,9 @@ def rewrite_html(path: Path) -> None:
             return match.group(0)
         return f'href={target}index.html'
 
-    updated = QUOTED_HREF_RE.sub(replace_quoted, original)
+    updated = QUOTED_SUBPATH_RE.sub(strip_quoted_subpath, original)
+    updated = UNQUOTED_SUBPATH_RE.sub(strip_unquoted_subpath, updated)
+    updated = QUOTED_HREF_RE.sub(replace_quoted, updated)
     updated = UNQUOTED_HREF_RE.sub(replace_unquoted, updated)
     if updated != original:
         path.write_text(updated, encoding="utf-8")

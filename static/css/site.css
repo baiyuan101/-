@@ -20,7 +20,7 @@ html {
 
 body {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
   line-height: 1.65;
   color: var(--text);
   background: var(--bg);
@@ -58,19 +58,30 @@ img {
   font-size: 0.8rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  font-family: "Source Sans 3", "Noto Sans SC", "Segoe UI", sans-serif;
 }
 
 .site-title {
   margin: 0;
   font-size: clamp(2rem, 5vw, 3.15rem);
   font-weight: normal;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  font-family: "Orbitron", "Segoe UI", sans-serif;
 }
 
 .site-title a {
   color: var(--text);
   text-decoration: none;
+}
+
+.site-subtitle {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "Source Sans 3", "Noto Sans SC", "Segoe UI", sans-serif;
 }
 
 .site-title-cn,
@@ -88,6 +99,7 @@ img {
   max-width: 42rem;
   color: var(--muted);
   font-size: 1rem;
+  font-family: "Source Sans 3", "Noto Sans SC", "Segoe UI", sans-serif;
 }
 
 .site-nav {
@@ -98,6 +110,7 @@ img {
   font-size: 0.95rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  font-family: "Source Sans 3", "Noto Sans SC", "Segoe UI", sans-serif;
 }
 
 .site-nav a {
@@ -142,8 +155,9 @@ img {
   margin: 0 0 0.45rem;
   font-size: clamp(2rem, 4vw, 2.8rem);
   font-weight: normal;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-family: "Orbitron", "Segoe UI", sans-serif;
 }
 
 .page-intro,
@@ -277,6 +291,7 @@ img {
   font-weight: normal;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-family: "Source Sans 3", "Noto Sans SC", "Segoe UI", sans-serif;
 }
 
 .home-directory li {
@@ -298,11 +313,13 @@ img {
   margin-top: 0.1rem;
   color: var(--muted);
   font-size: 0.92rem;
+  font-family: "Source Sans 3", "Noto Sans SC", "Segoe UI", sans-serif;
 }
 
 .quiet {
   color: var(--muted);
   font-size: 0.95rem;
+  font-family: "Source Sans 3", "Noto Sans SC", "Segoe UI", sans-serif;
 }
 
 .site-footer {
