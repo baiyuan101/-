@@ -9,7 +9,9 @@
       {{ $current = printf "/%s" $current }}
     {{ end }}
   {{ end }}
-  <p class="site-kicker">{{ site.Params.site_kicker | default "Academic Website" }}</p>
+  {{ with site.Params.site_kicker }}
+    <p class="site-kicker">{{ . }}</p>
+  {{ end }}
   <h1 class="site-title"><a href="{{ site.Home.RelPermalink }}">{{ site.Params.site_name | default site.Title }}</a></h1>
   {{ with site.Params.site_subtitle }}
     <p class="site-subtitle">{{ . }}</p>
