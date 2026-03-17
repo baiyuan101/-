@@ -1,0 +1,8 @@
+.hugo_build.lock
+node_modules/
+public/
+public-preview/
+resources/
+tmp/
+preview.out.log
+preview.err.log

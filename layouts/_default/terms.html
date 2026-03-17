@@ -1,0 +1,14 @@
+{{ define "main" }}
+  <section>
+    <h1 class="page-title">{{ .Title }}</h1>
+    <p class="section-intro">Taxonomy overview.</p>
+    <ul class="tag-cloud">
+      {{ range .Data.Terms.Alphabetical }}
+        <li>
+          <a class="tag-pill" href="{{ .Page.RelPermalink }}">{{ .Page.Title }}</a>
+          <span class="quiet">({{ .Count }})</span>
+        </li>
+      {{ end }}
+    </ul>
+  </section>
+{{ end }}

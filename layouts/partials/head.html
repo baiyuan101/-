@@ -1,0 +1,14 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>
+  {{ if .IsHome }}
+    {{ site.Title }}
+  {{ else }}
+    {{ .Title }} | {{ site.Title }}
+  {{ end }}
+</title>
+<meta name="description" content="{{ .Description | default .Params.description | default site.Params.description }}">
+<link rel="stylesheet" href="/css/site.css">
+{{ with .OutputFormats.Get "RSS" }}
+  <link rel="alternate" type="{{ .MediaType.Type }}" href="{{ .RelPermalink }}" title="{{ $.Title }}">
+{{ end }}

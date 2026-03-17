@@ -1,0 +1,242 @@
+{{ define "main" }}
+  {{ $rel := .RelPermalink }}
+
+  {{ if eq $rel "/publications/" }}
+    {{ $articles := sort (where .RegularPages "Params.publication_section" "articles") "Params.year" "desc" }}
+    {{ $books := sort (where .RegularPages "Params.publication_section" "books") "Params.year" "desc" }}
+    {{ $other := sort (where .RegularPages "Params.publication_section" "other") "Params.year" "desc" }}
+    <section>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="section-intro">{{ .Params.description }}</p>
+      <div class="content-block">{{ .Content }}</div>
+
+      <section class="panel">
+        <h2>Articles</h2>
+        <ul class="listing">
+          {{ range $articles }}
+            <li>
+              <div class="listing-title-row">
+                <a class="listing-title-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
+                <div class="listing-actions">
+                  {{ with .Params.pdf }}<a class="listing-action-link" href="{{ . }}">PDF</a>{{ end }}
+                  {{ if and .Params.pdf .Params.ai_translation_pdf }}<span class="listing-action-separator">|</span>{{ end }}
+                  {{ with .Params.ai_translation_pdf }}<a class="listing-action-link" href="{{ . }}">AI Translation (EN)</a>{{ end }}
+                </div>
+              </div>
+              <div class="meta">
+                {{ delimit (.Params.authors | default (slice)) ", " }} · {{ .Params.year }} · {{ .Params.venue }}{{ if .Params.published_in_chinese }} · Published in Chinese{{ end }}
+              </div>
+              <div class="inline-list">
+                {{ with .Params.doi }}<a href="https://doi.org/{{ . }}">DOI</a>{{ end }}
+                {{ with .Params.external_url }}<a href="{{ . }}">External Link</a>{{ end }}
+              </div>
+            </li>
+          {{ else }}
+            <li class="quiet">No article entries yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Books &amp; Edited Volumes</h2>
+        <ul class="listing">
+          {{ range $books }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <div class="meta">
+                {{ delimit (.Params.authors | default (slice)) ", " }} · {{ .Params.year }} · {{ .Params.venue }}
+              </div>
+              {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+              <div class="inline-list">
+                {{ with .Params.purchase_url }}<a href="{{ . }}">Purchase</a>{{ end }}
+                {{ with .Params.external_url }}<a href="{{ . }}">Publisher</a>{{ end }}
+              </div>
+            </li>
+          {{ else }}
+            <li class="quiet">No books listed yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Other Publications (pen name: Bai Yuan)</h2>
+        <ul class="listing">
+          {{ range $other }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <div class="meta">
+                {{ delimit (.Params.authors | default (slice)) ", " }} · {{ .Params.year }} · {{ .Params.venue }}
+              </div>
+              {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+              <div class="inline-list">
+                {{ with .Params.purchase_url }}<a href="{{ . }}">Purchase</a>{{ end }}
+                {{ with .Params.external_url }}<a href="{{ . }}">Publisher</a>{{ end }}
+              </div>
+            </li>
+          {{ else }}
+            <li class="quiet">No additional publications listed yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+    </section>
+
+  {{ else if eq $rel "/blog/" }}
+    {{ $items := sort .RegularPages "Date" "desc" }}
+    <section>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="section-intro">{{ .Params.description }}</p>
+      <p class="quiet"><a href="/tags/">Tags</a> · <a href="/archive/">Archive</a> · <a href="{{ .RelPermalink }}index.xml">RSS</a></p>
+      <div class="content-block">{{ .Content }}</div>
+      <ul class="listing">
+        {{ range $items }}
+          <li>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            <div class="meta">{{ .Date.Format "January 2, 2006" }}</div>
+            {{ with .Params.summary }}
+              <p>{{ . }}</p>
+            {{ else }}
+              <p>{{ .Summary | plainify }}</p>
+            {{ end }}
+            {{ with .Params.tags }}
+              <div class="inline-list">
+                {{ range . }}
+                  <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+                {{ end }}
+              </div>
+            {{ end }}
+          </li>
+        {{ end }}
+      </ul>
+    </section>
+
+  {{ else if eq $rel "/lectures/" }}
+    {{ $lecturesSection := site.GetPage "/lectures" }}
+    {{ $standaloneTalks := sort (where ($lecturesSection.RegularPages | default (slice)) "Params.series" "eq" nil) "Date" "desc" }}
+    <section>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="section-intro">{{ .Params.description }}</p>
+      <div class="content-block">{{ .Content }}</div>
+
+      <section class="panel">
+        <h2>Standalone</h2>
+        <ul class="listing">
+          {{ range $standaloneTalks }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <div class="meta">{{ .Date.Format "January 2, 2006" }}{{ with .Params.venue }} · {{ . }}{{ end }}</div>
+              {{ with .Params.abstract }}<p>{{ . }}</p>{{ end }}
+            </li>
+          {{ else }}
+            <li class="quiet">No standalone talks yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+    </section>
+
+  {{ else if eq $rel "/lectures/media/" }}
+    {{ $mediaSection := site.GetPage "/lectures/media" }}
+    {{ $mediaSeriesSection := site.GetPage "/lectures/media/series" }}
+    {{ $seriesPages := sort ($mediaSeriesSection.RegularPages | default (slice)) "Title" "asc" }}
+    {{ $standaloneEpisodes := sort (where ($mediaSection.RegularPages | default (slice)) "Params.series" "eq" nil) "Date" "desc" }}
+    <section>
+      <p class="quiet"><a href="{{ .RelPermalink }}index.xml">RSS</a></p>
+
+      <section class="panel">
+        <h2>Series</h2>
+        <ul class="listing">
+          {{ range $seriesPages }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+            </li>
+          {{ else }}
+            <li class="quiet">No media series yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Standalone</h2>
+        <ul class="listing">
+          {{ range $standaloneEpisodes }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <div class="meta">{{ .Date.Format "January 2, 2006" }} · {{ title (.Params.format | default "media") }}</div>
+              <p>{{ .Params.show_notes }}</p>
+            </li>
+          {{ else }}
+            <li class="quiet">No standalone episodes yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+    </section>
+
+  {{ else if eq $rel "/lectures/series/" }}
+    <section>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <div class="content-block">{{ .Content }}</div>
+      <ul class="listing">
+        {{ range sort .RegularPages "Title" "asc" }}
+          <li>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+          </li>
+        {{ end }}
+      </ul>
+    </section>
+
+  {{ else if eq $rel "/lectures/media/series/" }}
+    <section>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <div class="content-block">{{ .Content }}</div>
+      <ul class="listing">
+        {{ range sort .RegularPages "Title" "asc" }}
+          <li>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+          </li>
+        {{ end }}
+      </ul>
+    </section>
+
+  {{ else if eq $rel "/archive/" }}
+    {{ $posts := where site.RegularPages "Section" "blog" }}
+    <section>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <div class="content-block">{{ .Content }}</div>
+      {{ range ($posts.GroupByDate "2006") }}
+        <section class="panel">
+          <h2>{{ .Key }}</h2>
+          <ul class="listing">
+            {{ range .Pages }}
+              <li>
+                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                <div class="meta">{{ .Date.Format "January 2" }}</div>
+              </li>
+            {{ end }}
+          </ul>
+        </section>
+      {{ end }}
+    </section>
+
+  {{ else if eq $rel "/search/" }}
+    <section>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="section-intro">{{ .Params.description }}</p>
+      <div class="content-block">{{ .Content }}</div>
+      <form class="search-form" role="search">
+        <label class="sr-only" for="search-input">Search the site</label>
+        <input id="search-input" type="search" placeholder="Search papers, notes, talks, and media..." data-search-input>
+      </form>
+      <p class="quiet" data-search-status>Loading search index...</p>
+      <ul class="search-results" data-search-results></ul>
+      <script src="/js/search.js"></script>
+    </section>
+
+  {{ else }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <div class="content-block">{{ .Content }}</div>
+    </article>
+  {{ end }}
+{{ end }}

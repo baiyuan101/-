@@ -1,0 +1,71 @@
+baseURL = "https://example.org/"
+languageCode = "en-us"
+title = "Hanlin Ma"
+enableRobotsTXT = true
+summaryLength = 24
+rssLimit = 20
+disableKinds = ["taxonomy", "term"]
+
+[params]
+author = "Hanlin Ma"
+chinese_name = "马翰林"
+email = "2439@usts.edu.cn"
+tagline = "Philosophy of science and technology, ethics, cognitive science, and AI"
+description = "Academic website of Hanlin Ma, Associate Professor at Suzhou University of Science and Technology."
+home_intro = "Hanlin Ma is Associate Professor in the School of Marxism at Suzhou University of Science and Technology. His work focuses on philosophy of science and technology, ethics, cognitive science, philosophy of technology, and contemporary debates surrounding artificial intelligence."
+portrait = "images/WeChat Image_20220803184541(1)(1).jpg"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[caches]
+  [caches.images]
+    dir = ":cacheDir/images"
+
+[permalinks]
+blog = "/blog/:slug/"
+publications = "/publications/:slug/"
+
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+section = ["HTML", "RSS"]
+taxonomy = ["HTML", "RSS"]
+term = ["HTML", "RSS"]
+
+[menu]
+  [[menu.main]]
+  name = "Home"
+  url = "/"
+  weight = 10
+
+  [[menu.main]]
+  name = "About"
+  url = "/about/"
+  weight = 20
+
+  [[menu.main]]
+  name = "Publications"
+  url = "/publications/"
+  weight = 30
+
+  [[menu.main]]
+  name = "Blog/Notes"
+  url = "/blog/"
+  weight = 40
+
+  [[menu.main]]
+  name = "Lectures"
+  url = "/lectures/"
+  weight = 50
+
+  [[menu.main]]
+  name = "Podcast"
+  url = "/lectures/media/"
+  weight = 60
+
+  [[menu.main]]
+  name = "Contact"
+  url = "/contact/"
+  weight = 70

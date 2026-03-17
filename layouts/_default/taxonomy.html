@@ -1,0 +1,30 @@
+{{ define "main" }}
+  <section>
+    <h1 class="page-title">Tag: {{ .Title }}</h1>
+    <ul class="listing">
+      {{ range sort .Pages "Date" "desc" }}
+        <li>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <div class="meta">
+            {{ if .Date.IsZero }}
+              {{ .Section }}
+            {{ else }}
+              {{ .Date.Format "January 2, 2006" }} · {{ .Section }}
+            {{ end }}
+          </div>
+          {{ if .Params.summary }}
+            <p>{{ .Params.summary }}</p>
+          {{ else if .Params.abstract }}
+            <p>{{ .Params.abstract }}</p>
+          {{ else if .Params.show_notes }}
+            <p>{{ .Params.show_notes }}</p>
+          {{ else }}
+            <p>{{ .Summary | plainify }}</p>
+          {{ end }}
+        </li>
+      {{ else }}
+        <li class="quiet">No pages tagged with this term yet.</li>
+      {{ end }}
+    </ul>
+  </section>
+{{ end }}

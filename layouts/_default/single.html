@@ -1,0 +1,283 @@
+{{ define "main" }}
+  {{ $path := .RelPermalink }}
+
+  {{ if hasPrefix $path "/publications/" }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="meta">
+        {{ delimit (.Params.authors | default (slice)) ", " }} · {{ .Params.year }} · {{ .Params.venue }} · {{ .Params.type }}{{ if .Params.published_in_chinese }} · Published in Chinese{{ end }}
+      </p>
+      {{ with .Params.publication_section }}
+        <p class="quiet">Section: {{ if eq . "articles" }}Articles{{ else if eq . "books" }}Books &amp; Edited Volumes{{ else if eq . "other" }}Other Publications (pen name: Bai Yuan){{ else }}{{ title (replace . "-" " ") }}{{ end }}</p>
+      {{ end }}
+      {{ with .Params.tags }}
+        <div class="inline-list">
+          {{ range . }}
+            <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+          {{ end }}
+        </div>
+      {{ end }}
+      {{ with .Params.abstract }}
+        <section class="panel">
+          <h2>Abstract</h2>
+          <p>{{ . }}</p>
+        </section>
+      {{ end }}
+      <section class="content-block">
+        {{ .Content }}
+      </section>
+      <section class="panel">
+        <h2>Links</h2>
+        <ul class="listing">
+          {{ with .Params.external_url }}
+            <li><a href="{{ . }}">External link</a></li>
+          {{ end }}
+          {{ with .Params.pdf }}
+            <li><a href="{{ . }}">PDF</a></li>
+          {{ end }}
+          {{ with .Params.ai_translation_pdf }}
+            <li><a href="{{ . }}">AI Translation (EN)</a></li>
+          {{ end }}
+          {{ with .Params.purchase_url }}
+            <li><a href="{{ . }}">Purchase link</a></li>
+          {{ end }}
+          {{ with .Params.doi }}
+            <li><a href="https://doi.org/{{ . }}">DOI</a></li>
+          {{ end }}
+        </ul>
+      </section>
+      {{ with .Params.bibtex }}
+        <section class="panel">
+          <h2>BibTeX</h2>
+          <pre><code>{{ . }}</code></pre>
+        </section>
+      {{ end }}
+    </article>
+
+  {{ else if hasPrefix $path "/blog/" }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="meta">{{ .Date.Format "January 2, 2006" }}</p>
+      {{ with .Params.tags }}
+        <div class="inline-list">
+          {{ range . }}
+            <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+          {{ end }}
+        </div>
+      {{ end }}
+      {{ with .Params.summary }}
+        <p class="section-intro">{{ . }}</p>
+      {{ end }}
+      <section class="content-block">
+        {{ .Content }}
+      </section>
+    </article>
+
+  {{ else if eq .RelPermalink "/tags/" }}
+    {{ $tagPages := sort (where site.RegularPages "Section" "tag") "Title" "asc" }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <section class="content-block">{{ .Content }}</section>
+      <ul class="tag-cloud">
+        {{ range $tagPages }}
+          <li>
+            <a class="tag-pill" href="{{ .RelPermalink }}">{{ .Title }}</a>
+          </li>
+        {{ else }}
+          <li class="quiet">No tags yet.</li>
+        {{ end }}
+      </ul>
+    </article>
+
+  {{ else if hasPrefix $path "/tag/" }}
+    {{ $term := .File.BaseFileName }}
+    {{ $matches := slice }}
+    {{ range site.RegularPages }}
+      {{ if in (.Params.tags | default (slice)) $term }}
+        {{ $matches = $matches | append . }}
+      {{ end }}
+    {{ end }}
+    {{ $matches = sort $matches "Date" "desc" }}
+    <article>
+      <h1 class="page-title">Tag: {{ .Title }}</h1>
+      <section class="content-block">{{ .Content }}</section>
+      <ul class="listing">
+        {{ range $matches }}
+          <li>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            <div class="meta">
+              {{ if .Date.IsZero }}
+                {{ .Section }}
+              {{ else }}
+                {{ .Date.Format "January 2, 2006" }} · {{ .Section }}
+              {{ end }}
+            </div>
+            {{ if .Params.summary }}
+              <p>{{ .Params.summary }}</p>
+            {{ else if .Params.abstract }}
+              <p>{{ .Params.abstract }}</p>
+            {{ else if .Params.show_notes }}
+              <p>{{ .Params.show_notes }}</p>
+            {{ else }}
+              <p>{{ .Summary | plainify }}</p>
+            {{ end }}
+          </li>
+        {{ else }}
+          <li class="quiet">No pages tagged with this term yet.</li>
+        {{ end }}
+      </ul>
+    </article>
+
+  {{ else if hasPrefix $path "/lectures/media/series/" }}
+    {{ $seriesKey := .Slug | default .File.BaseFileName }}
+    {{ $mediaSection := site.GetPage "/lectures/media" }}
+    {{ $episodes := sort (where ($mediaSection.RegularPagesRecursive | default (slice)) "Params.series" $seriesKey) "Date" "desc" }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      {{ with .Params.summary }}<p class="section-intro">{{ . }}</p>{{ end }}
+      <section class="content-block">{{ .Content }}</section>
+      <section class="panel">
+        <h2>Episodes</h2>
+        <ul class="listing">
+          {{ range $episodes }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <div class="meta">{{ .Date.Format "January 2, 2006" }} · {{ title (.Params.format | default "media") }}</div>
+              <p>{{ .Params.show_notes }}</p>
+            </li>
+          {{ else }}
+            <li class="quiet">No episodes in this series yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+    </article>
+
+  {{ else if hasPrefix $path "/lectures/media/" }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="meta">{{ .Date.Format "January 2, 2006" }} · {{ title (.Params.format | default "media") }}</p>
+      {{ with .Params.tags }}
+        <div class="inline-list">
+          {{ range . }}
+            <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+          {{ end }}
+        </div>
+      {{ end }}
+      {{ with .Params.series }}
+        <p class="quiet">Series: <a href="/lectures/media/series/{{ . | urlize }}/">{{ . }}</a></p>
+      {{ end }}
+      {{ with .Params.show_notes }}
+        <section class="panel">
+          <h2>Show Notes</h2>
+          <p>{{ . }}</p>
+        </section>
+      {{ end }}
+      {{ with .Params.external_url }}
+        <section class="panel">
+          <h2>Watch</h2>
+          <p><a href="{{ . }}">Open video on Bilibili</a></p>
+        </section>
+      {{ end }}
+      {{ with .Params.embed_url }}
+        <section class="panel">
+          <h2>Player</h2>
+          <p><a href="{{ . }}">Open embed link</a></p>
+          <iframe src="{{ . }}" title="{{ $.Title }}" loading="lazy" style="width: 100%; min-height: 160px; border: 1px solid #d8d0c2;"></iframe>
+        </section>
+      {{ end }}
+      {{ with .Params.transcript }}
+        <section class="panel">
+          <h2>Transcript Excerpt</h2>
+          <p>{{ . }}</p>
+        </section>
+      {{ end }}
+      <section class="content-block">
+        {{ .Content }}
+      </section>
+    </article>
+
+  {{ else if hasPrefix $path "/lectures/series/" }}
+    {{ $seriesKey := .Slug | default .File.BaseFileName }}
+    {{ $lecturesSection := site.GetPage "/lectures" }}
+    {{ $talks := sort (where ($lecturesSection.RegularPagesRecursive | default (slice)) "Params.series" $seriesKey) "Date" "desc" }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      {{ with .Params.summary }}<p class="section-intro">{{ . }}</p>{{ end }}
+      <section class="content-block">{{ .Content }}</section>
+      <section class="panel">
+        <h2>Talks in this Series</h2>
+        <ul class="listing">
+          {{ range $talks }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <div class="meta">{{ .Date.Format "January 2, 2006" }}{{ with .Params.venue }} · {{ . }}{{ end }}</div>
+              {{ with .Params.abstract }}<p>{{ . }}</p>{{ end }}
+            </li>
+          {{ else }}
+            <li class="quiet">No talks in this series yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+    </article>
+
+  {{ else if hasPrefix $path "/lectures/" }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="meta">{{ .Date.Format "January 2, 2006" }}{{ with .Params.venue }} · {{ . }}{{ end }}</p>
+      {{ with .Params.tags }}
+        <div class="inline-list">
+          {{ range . }}
+            <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+          {{ end }}
+        </div>
+      {{ end }}
+      {{ with .Params.series }}
+        <p class="quiet">Series: <a href="/lectures/series/{{ . | urlize }}/">{{ . }}</a></p>
+      {{ end }}
+      {{ with .Params.abstract }}
+        <section class="panel">
+          <h2>Abstract</h2>
+          <p>{{ . }}</p>
+        </section>
+      {{ end }}
+      {{ with .Params.materials }}
+        <section class="panel">
+          <h2>Materials</h2>
+          <ul class="listing">
+            {{ range . }}
+              <li><a href="{{ .url }}">{{ .label }}</a></li>
+            {{ end }}
+          </ul>
+        </section>
+      {{ end }}
+      <section class="content-block">
+        {{ .Content }}
+      </section>
+    </article>
+
+  {{ else if eq .RelPermalink "/about/" }}
+    {{ $portrait := site.Params.portrait | relURL }}
+    <article class="about-layout">
+      <div class="about-copy">
+        <h1 class="page-title">{{ .Title }}</h1>
+        <section class="content-block">
+          {{ .Content }}
+        </section>
+      </div>
+      <aside class="about-aside">
+        <figure class="portrait-card portrait-card-about">
+          <img class="portrait-image" src="{{ $portrait }}" alt="Portrait of {{ site.Title }}">
+          <figcaption class="portrait-caption">Associate Professor, School of Marxism</figcaption>
+        </figure>
+      </aside>
+    </article>
+
+  {{ else }}
+    <article>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <section class="content-block">
+        {{ .Content }}
+      </section>
+    </article>
+  {{ end }}
+{{ end }}

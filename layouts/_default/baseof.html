@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="{{ site.LanguageCode | default `en-us` }}">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body{{ if eq .RelPermalink "/" }} class="home-page"{{ end }}>
+    <div class="site-shell">
+      {{ partial "header.html" . }}
+      <main id="main">
+        {{ block "main" . }}{{ end }}
+      </main>
+      {{ partial "footer.html" . }}
+    </div>
+  </body>
+</html>

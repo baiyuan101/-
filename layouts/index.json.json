@@ -1,0 +1,25 @@
+{{- $items := slice -}}
+{{- range site.RegularPages -}}
+  {{- if ne .Section "tag" -}}
+    {{- $summary := "" -}}
+    {{- if .Params.summary -}}
+      {{- $summary = .Params.summary -}}
+    {{- else if .Params.abstract -}}
+      {{- $summary = .Params.abstract -}}
+    {{- else if .Params.show_notes -}}
+      {{- $summary = .Params.show_notes -}}
+    {{- else -}}
+      {{- $summary = .Summary | plainify | htmlUnescape -}}
+    {{- end -}}
+    {{- $item := dict
+      "title" .Title
+      "permalink" .RelPermalink
+      "section" .Section
+      "summary" $summary
+      "date" (cond .Date.IsZero "" (.Date.Format "2006-01-02"))
+      "tags" (.Params.tags | default (slice))
+    -}}
+    {{- $items = $items | append $item -}}
+  {{- end -}}
+{{- end -}}
+{{- $items | jsonify -}}
