@@ -22,6 +22,8 @@ def detect_kind(path: Path):
         return None
     if rel.startswith("publications/"):
         return "publication"
+    if rel.startswith("blog/series/"):
+        return None
     if rel.startswith("blog/"):
         return "blog"
     if rel.startswith("lectures/media/series/"):

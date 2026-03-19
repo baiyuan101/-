@@ -41,6 +41,10 @@
           {{ with .Params.purchase_url }}
             <li><a href="{{ . }}">Purchase link</a></li>
           {{ end }}
+          {{ with .Params.chapter_series_url }}
+            {{ $seriesURL := . }}
+            <li><a href="{{ if hasPrefix $seriesURL "/" }}{{ $seriesURL | relURL }}{{ else }}{{ $seriesURL }}{{ end }}">{{ $.Params.chapter_series_label | default "Chapter series" }}</a></li>
+          {{ end }}
           {{ with .Params.doi }}
             <li><a href="https://doi.org/{{ . }}">DOI</a></li>
           {{ end }}
@@ -55,9 +59,43 @@
     </article>
 
   {{ else if eq .Section "blog" }}
+    {{ if eq .CurrentSection.Title "Blog Series" }}
+      {{ $seriesKey := .Slug | default .File.BaseFileName }}
+      {{ $posts := slice }}
+      {{ range site.RegularPages }}
+        {{ if and (eq .Section "blog") (ne .CurrentSection.Title "Blog Series") (eq (.Params.series | default "") $seriesKey) }}
+          {{ $posts = $posts | append . }}
+        {{ end }}
+      {{ end }}
+      {{ $posts = sort $posts "Params.series_order" "asc" }}
+      <article>
+        <h1 class="page-title">{{ .Title }}</h1>
+        {{ with .Params.summary }}<p class="section-intro">{{ . }}</p>{{ end }}
+        <section class="content-block">
+          {{ .Content }}
+        </section>
+        <section class="panel">
+          <h2>Posts in This Series</h2>
+          <ol class="listing listing-numbered">
+            {{ range $posts }}
+              <li>
+                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                <div class="meta">{{ .Date.Format "January 2, 2006" }}</div>
+                {{ with .Params.summary }}<p>{{ . }}</p>{{ end }}
+              </li>
+            {{ else }}
+              <li class="quiet">No posts in this series yet.</li>
+            {{ end }}
+          </ol>
+        </section>
+      </article>
+    {{ else }}
     <article>
       <h1 class="page-title">{{ .Title }}</h1>
       <p class="meta">{{ .Date.Format "January 2, 2006" }}</p>
+      {{ with .Params.series }}
+        <p class="quiet">Series: <a href="{{ printf "blog/%s/" . | relURL }}">{{ $.Params.series_title | default (. | humanize) }}</a></p>
+      {{ end }}
       {{ with .Params.tags }}
         <div class="inline-list">
           {{ range . }}
@@ -65,13 +103,46 @@
           {{ end }}
         </div>
       {{ end }}
-      {{ with .Params.summary }}
-        <p class="section-intro">{{ . }}</p>
+      {{ if ne (.Params.bilingual_layout | default false) true }}
+        {{ with .Params.summary }}
+          <p class="section-intro">{{ . }}</p>
+        {{ end }}
       {{ end }}
-      <section class="content-block">
-        {{ .Content }}
-      </section>
+      {{ with .Params.source_note }}
+        <p class="quiet">{{ . }}</p>
+      {{ end }}
+      {{ if .Params.bilingual_layout }}
+        {{ $segments := split .RawContent "<!--NOTES-->" }}
+        {{ $bilingual := index $segments 0 }}
+        {{ $notes := "" }}
+        {{ if gt (len $segments) 1 }}
+          {{ $notes = index $segments 1 }}
+        {{ end }}
+        {{ $parts := split $bilingual "<!--ENGLISH-->" }}
+        <section class="bilingual-grid">
+          <div class="bilingual-pane bilingual-pane-en">
+            <div class="bilingual-label">English</div>
+            {{ if gt (len $parts) 1 }}
+              {{ (index $parts 1) | markdownify }}
+            {{ end }}
+          </div>
+          <div class="bilingual-pane bilingual-pane-zh">
+            <div class="bilingual-label">中文</div>
+            {{ (index $parts 0) | markdownify }}
+          </div>
+        </section>
+        {{ if $notes }}
+          <section class="content-block bilingual-notes">
+            {{ $notes | markdownify }}
+          </section>
+        {{ end }}
+      {{ else }}
+        <section class="content-block">
+          {{ .Content }}
+        </section>
+      {{ end }}
     </article>
+    {{ end }}
 
   {{ else if eq .Section "tags" }}
     {{ $tagPages := sort (where site.RegularPages "Section" "tag") "Title" "asc" }}

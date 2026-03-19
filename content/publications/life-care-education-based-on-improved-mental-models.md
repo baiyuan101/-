@@ -13,7 +13,11 @@
     "education",
     "one-health"
   ],
-  "summary": "Edited volume on life-care education and improved mental models."
+  "summary": "Edited volume on life-care education and improved mental models.",
+  "chapter_series_url": "/blog/the-educational-philosophy-of-care/",
+  "chapter_series_label": "Chapter 8 by Hanlin Ma: The Educational Philosophy of Care"
 }
 
 This edited volume brings together work on life-care education and interdisciplinary approaches to human development and social responsibility.
+
+Hanlin Ma's contribution to this volume is **Chapter 8, “The Educational Philosophy of Care.”**

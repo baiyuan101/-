@@ -84,15 +84,58 @@
       </section>
     </section>
 
-  {{ else if and (eq .Kind "section") (eq .Section "blog") }}
+  {{ else if eq .RelPermalink "/blog/series/" }}
+    {{ $seriesPages := sort .RegularPages "Title" "asc" }}
+    {{ $standalonePosts := slice }}
+    {{ range site.RegularPages }}
+      {{ if and (eq .Section "blog") (ne .CurrentSection.Title "Blog Series") (eq (.Params.series | default "") "") }}
+        {{ $standalonePosts = $standalonePosts | append . }}
+      {{ end }}
+    {{ end }}
+    {{ $standalonePosts = sort $standalonePosts "Date" "desc" }}
+    <section>
+      <h1 class="page-title">{{ .Title }}</h1>
+      <p class="section-intro">{{ .Params.description }}</p>
+
+      <section class="panel">
+        <h2>Series</h2>
+        <ul class="listing">
+          {{ range $seriesPages }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            </li>
+          {{ else }}
+            <li class="quiet">No multi-post series yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Standalone</h2>
+        <ul class="listing">
+          {{ range $standalonePosts }}
+            <li>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <div class="meta">{{ .Date.Format "January 2, 2006" }} · Single-post note</div>
+              {{ with .Params.summary }}<p>{{ . }}</p>{{ else }}<p>{{ .Summary | plainify }}</p>{{ end }}
+            </li>
+          {{ else }}
+            <li class="quiet">No standalone notes yet.</li>
+          {{ end }}
+        </ul>
+      </section>
+    </section>
+
+  {{ else if and (eq .Kind "section") (eq .Section "blog") (ne .RelPermalink "/blog/series/") }}
     {{ $items := sort .RegularPages "Date" "desc" }}
     <section>
       <h1 class="page-title">{{ .Title }}</h1>
       <p class="section-intro">{{ .Params.description }}</p>
-      <p class="quiet"><a href="{{ "tags/" | relURL }}">Tags</a> · <a href="{{ "archive/" | relURL }}">Archive</a> · <a href="{{ .RelPermalink }}index.xml">RSS</a></p>
+      <p class="quiet"><a href="{{ "tags/" | relURL }}">Tags</a> · <a href="{{ "archive/" | relURL }}">Archive</a> · <a href="{{ "blog/series/" | relURL }}">Series</a> · <a href="{{ .RelPermalink }}index.xml">RSS</a></p>
       <div class="content-block">{{ .Content }}</div>
       <ul class="listing">
         {{ range $items }}
+          {{ $post := . }}
           <li>
             <a href="{{ .RelPermalink }}">{{ .Title }}</a>
             <div class="meta">{{ .Date.Format "January 2, 2006" }}</div>
@@ -107,6 +150,9 @@
                   <a href="{{ printf "tag/%s/" (. | urlize) | relURL }}">{{ . }}</a>
                 {{ end }}
               </div>
+            {{ end }}
+            {{ with .Params.series }}
+              <p class="quiet">Series: <a href="{{ printf "blog/%s/" . | relURL }}">{{ $post.Params.series_title | default (. | humanize) }}</a></p>
             {{ end }}
           </li>
         {{ end }}

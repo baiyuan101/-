@@ -210,6 +210,15 @@ img {
   border-top: 0;
 }
 
+.listing-numbered {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+
+.listing-numbered li {
+  padding-left: 0.2rem;
+}
+
 .listing-compact li {
   padding: 0.55rem 0;
 }
@@ -364,6 +373,47 @@ img {
   padding-top: 0.25rem;
 }
 
+.bilingual-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+  margin-top: 1rem;
+}
+
+.bilingual-pane {
+  min-width: 0;
+}
+
+.bilingual-pane-en {
+  padding-left: 1.5rem;
+  border-left: 1px solid #d7d1c5;
+}
+
+.bilingual-label {
+  margin: 0 0 0.85rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: "Source Sans 3", "Noto Sans SC", "Segoe UI", sans-serif;
+}
+
+.bilingual-pane > :first-child {
+  margin-top: 0;
+}
+
+.bilingual-notes {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.bilingual-notes ol,
+.bilingual-notes ul {
+  padding-left: 1.25rem;
+}
+
 .portrait-card-about .portrait-image {
   aspect-ratio: 4 / 5;
   object-position: center 18%;
@@ -415,7 +465,8 @@ blockquote {
 @media (max-width: 780px) {
   .home-intro,
   .about-layout,
-  .home-split {
+  .home-split,
+  .bilingual-grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
@@ -423,6 +474,13 @@ blockquote {
   .portrait-card,
   .about-aside {
     max-width: 320px;
+  }
+
+  .bilingual-pane-en {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid #d7d1c5;
+    padding-top: 1.2rem;
   }
 }
 
