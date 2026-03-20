@@ -43,7 +43,7 @@
           {{ end }}
           {{ with .Params.chapter_series_url }}
             {{ $seriesURL := . }}
-            <li><a href="{{ if hasPrefix $seriesURL "/" }}{{ $seriesURL | relURL }}{{ else }}{{ $seriesURL }}{{ end }}">{{ $.Params.chapter_series_label | default "Chapter series" }}</a></li>
+            <li><a href="{{ if hasPrefix $seriesURL "/" }}{{ strings.TrimPrefix "/" $seriesURL | relURL }}{{ else }}{{ $seriesURL }}{{ end }}">{{ $.Params.chapter_series_label | default "Chapter series" }}</a></li>
           {{ end }}
           {{ with .Params.doi }}
             <li><a href="https://doi.org/{{ . }}">DOI</a></li>
